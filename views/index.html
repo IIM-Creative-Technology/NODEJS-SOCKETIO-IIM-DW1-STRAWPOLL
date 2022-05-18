@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Page title</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div
+      id="app"
+      class="flex flex-1 justify-center items-center w-screen h-screen"
+    >
+      <div v-if="!isLoading" class="font-extrabold">{{ message }}</div>
+      <div v-else>
+        <img
+          src="https://dvic.devinci.fr/logos/pole.png"
+          class="w-40 animate-ping"
+        />
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0/dist/vue.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          isLoading: true,
+          message: "Hello Vue!",
+        },
+      });
+    </script>
+  </body>
+</html>
