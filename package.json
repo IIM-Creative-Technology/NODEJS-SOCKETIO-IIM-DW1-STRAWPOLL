@@ -9,10 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@solana/wallet-adapter-vue": "^0.4.5",
+    "@solana/wallet-adapter-wallets": "^0.15.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "socket.io": "^4.5.0",
-    "ts-node": "^10.7.0"
+    "solana-wallets-vue": "^0.3.2",
+    "ts-node": "^10.7.0",
+    "uninstall": "^0.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.16",
