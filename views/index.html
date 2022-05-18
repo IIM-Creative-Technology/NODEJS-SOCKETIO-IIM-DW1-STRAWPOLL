@@ -5,20 +5,10 @@
     <title>Strawpoll clim</title>
   </head>
   <body>
-    <div
-      id="app"
-      class="flex flex-1 justify-center items-center w-screen h-screen"
-    >
+    <div id="app" class="flex flex-1 justify-center items-center w-screen h-screen">
       <div v-if="!isLoading" class="flex flex-col h-full w-full">
-        <div
-          v-if="!poll"
-          id="main"
-          class="relative h-full bg-white overflow-hidden"
-        >
-          <div
-            class="hidden lg:block lg:absolute lg:inset-0"
-            aria-hidden="true"
-          >
+        <div v-if="!poll && cryptos.wallet" id="main" class="relative h-full bg-white overflow-hidden">
+          <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
             <svg
               class="absolute top-0 left-1/2 transform translate-x-64 -translate-y-8"
               :width="window.width"
@@ -35,44 +25,22 @@
                   height="20"
                   patternUnits="userSpaceOnUse"
                 >
-                  <rect
-                    x="0"
-                    y="0"
-                    width="4"
-                    height="4"
-                    class="text-gray-200"
-                    fill="currentColor"
-                  />
+                  <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
                 </pattern>
               </defs>
-              <rect
-                y="72"
-                width="640"
-                height="640"
-                class="text-gray-50"
-                fill="currentColor"
-              />
-              <rect
-                x="118"
-                width="404"
-                height="784"
-                fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)"
-              />
+              <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+              <rect x="118" width="404" height="784" fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)" />
             </svg>
           </div>
 
-          <div
-            class="flex flex-col flex-1 relative pt-6 pb-16 sm:pb-24 lg:pb-32"
-          >
+          <div class="flex flex-col flex-1 relative pt-6 pb-16 sm:pb-24 lg:pb-32">
             <div>
               <nav
                 class="relative max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6"
                 aria-label="Global"
               >
                 <div class="flex items-center flex-1">
-                  <div
-                    class="flex items-center justify-between w-full md:w-auto"
-                  >
+                  <div class="flex items-center justify-between w-full md:w-auto">
                     <a href="#">
                       <span class="sr-only">Workflow</span>
                       <img
@@ -88,7 +56,6 @@
                         aria-expanded="false"
                       >
                         <span class="sr-only">Open main menu</span>
-                        <!-- Heroicon name: outline/menu -->
                         <svg
                           class="h-6 w-6"
                           xmlns="http://www.w3.org/2000/svg"
@@ -98,47 +65,20 @@
                           stroke="currentColor"
                           aria-hidden="true"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M4 6h16M4 12h16M4 18h16"
-                          />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                       </button>
                     </div>
                   </div>
                   <div class="hidden md:block md:ml-10 md:space-x-10">
-                    <a
-                      href="#"
-                      class="font-medium text-gray-500 hover:text-gray-900"
-                      >Puissance 4</a
-                    >
+                    <a href="#" class="font-medium text-gray-500 hover:text-gray-900">Puissance 4</a>
 
-                    <a
-                      href="#"
-                      class="font-medium text-gray-500 hover:text-gray-900"
-                      >Mining</a
-                    >
+                    <a href="#" class="font-medium text-gray-500 hover:text-gray-900">Mining</a>
                   </div>
                 </div>
               </nav>
-
-              <!--
-                Mobile menu, show/hide based on menu open state.
-        
-                Entering: "duration-150 ease-out"
-                  From: "opacity-0 scale-95"
-                  To: "opacity-100 scale-100"
-                Leaving: "duration-100 ease-in"
-                  From: "opacity-100 scale-100"
-                  To: "opacity-0 scale-95"
-              -->
-              <div
-                class="absolute z-10 top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
-              >
-                <div
-                  class="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden"
-                >
+              <div class="absolute z-10 top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden">
+                <div class="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
                   <div class="px-5 pt-4 flex items-center justify-between">
                     <div>
                       <img
@@ -153,7 +93,6 @@
                         class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
                       >
                         <span class="sr-only">Close main menu</span>
-                        <!-- Heroicon name: outline/x -->
                         <svg
                           class="h-6 w-6"
                           xmlns="http://www.w3.org/2000/svg"
@@ -163,11 +102,7 @@
                           stroke="currentColor"
                           aria-hidden="true"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                     </div>
@@ -176,55 +111,43 @@
                     <a
                       href="#"
                       class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      >Puissance 4</a
                     >
+                      Puissance 4
+                    </a>
 
                     <a
                       href="#"
                       class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      >Mining</a
                     >
+                      Mining
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
 
-            <main
-              class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32"
-            >
+            <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
               <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <div
-                  class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left"
-                >
+                <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
                   <h1>
                     <span
                       class="block text-sm font-semibold uppercase tracking-wide text-gray-500 sm:text-base lg:text-sm xl:text-base"
-                      >Already out !</span
                     >
-                    <span
-                      class="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl"
-                    >
-                      <span class="text-gray-900"
-                        >Behold the great power of</span
-                      >
+                      Already out !
+                    </span>
+                    <span class="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
+                      <span class="text-gray-900">Behold the great power of</span>
                       <span class="text-indigo-600">Heddibu</span>
                     </span>
                   </h1>
-                  <p
-                    class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl"
-                  >
-                    Heddibus are already out on the Solana dev blockchain. Use
-                    any of the heddibuverse tool in order to generate some and
-                    <span class="block text-indigo-600 font-extrabold"
-                      >earn big money.</span
-                    >
+                  <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                    Heddibus are already out on the Solana dev blockchain. Use any of the heddibuverse tool in order to
+                    generate some and
+                    <span class="block text-indigo-600 font-extrabold">earn big money.</span>
                   </p>
-                  <div
-                    class="mt-6 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0"
-                  >
+                  <div class="mt-6 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                     <p class="text-sm font-medium text-gray-900">
-                      Please add your wallet public key in order to verify your
-                      Heddbu amount.
+                      Please add your wallet public key in order to verify your Heddbu amount.
                     </p>
                     <div class="flex flex-row mt-3">
                       <input
@@ -240,9 +163,7 @@
                         CLIM IT
                       </button>
                     </div>
-                    <p class="mt-3 text-sm text-gray-500">
-                      We do not care about the protection of your data.
-                    </p>
+                    <p class="mt-3 text-sm text-gray-500">We do not care about the protection of your data.</p>
                   </div>
                 </div>
                 <div
@@ -265,33 +186,13 @@
                         height="20"
                         patternUnits="userSpaceOnUse"
                       >
-                        <rect
-                          x="0"
-                          y="0"
-                          width="4"
-                          height="4"
-                          class="text-gray-200"
-                          fill="currentColor"
-                        />
+                        <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
                       </pattern>
                     </defs>
-                    <rect
-                      y="72"
-                      width="640"
-                      height="640"
-                      class="text-gray-50"
-                      fill="currentColor"
-                    />
-                    <rect
-                      x="118"
-                      width="404"
-                      height="784"
-                      fill="url(#4f4f415c-a0e9-44c2-9601-6ded5a34a13e)"
-                    />
+                    <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+                    <rect x="118" width="404" height="784" fill="url(#4f4f415c-a0e9-44c2-9601-6ded5a34a13e)" />
                   </svg>
-                  <div
-                    class="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md"
-                  >
+                  <div class="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
                     <button
                       type="button"
                       class="relative block w-full bg-white rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -302,22 +203,9 @@
                         src="https://www.interactivebrokers.hu/images/web/cryptocurrency-hero.jpg"
                         alt=""
                       />
-                      <span
-                        class="absolute inset-0 w-full h-full flex items-center justify-center"
-                        aria-hidden="true"
-                      >
-                        <svg
-                          class="h-20 w-20 text-indigo-500"
-                          fill="currentColor"
-                          viewBox="0 0 84 84"
-                        >
-                          <circle
-                            opacity="0.9"
-                            cx="42"
-                            cy="42"
-                            r="42"
-                            fill="white"
-                          />
+                      <span class="absolute inset-0 w-full h-full flex items-center justify-center" aria-hidden="true">
+                        <svg class="h-20 w-20 text-indigo-500" fill="currentColor" viewBox="0 0 84 84">
+                          <circle opacity="0.9" cx="42" cy="42" r="42" fill="white" />
                           <path
                             d="M55.5039 40.3359L37.1094 28.0729C35.7803 27.1869 34 28.1396 34 29.737V54.263C34 55.8604 35.7803 56.8131 37.1094 55.9271L55.5038 43.6641C56.6913 42.8725 56.6913 41.1275 55.5039 40.3359Z"
                           />
@@ -342,21 +230,15 @@
             >
               <div class="flex flex-1">{{ answer.value }}</div>
               <span v-if="poll.votes.length">
-                {{ Math.round(poll.votes.filter(e => e.value ===
-                answer.value).length / poll.votes.length * 100) }}%
+                {{ Math.round(poll.votes.filter(e => e.value === answer.value).length / poll.votes.length * 100) }}%
               </span>
-              <span>
-                ({{poll.votes.filter(e => e.value === answer.value).length}})
-              </span>
+              <span> ({{poll.votes.filter(e => e.value === answer.value).length}}) </span>
             </div>
           </div>
         </div>
       </div>
       <div v-else>
-        <img
-          src="https://dvic.devinci.fr/logos/pole.png"
-          class="w-40 animate-ping"
-        />
+        <img src="https://dvic.devinci.fr/logos/pole.png" class="w-40 animate-ping" />
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0/dist/vue.js"></script>
@@ -382,31 +264,31 @@
           },
         },
         mounted() {
-          this.poll.answers = this.generateAnswers();
+          this.poll.answers = this.generateAnswers()
           setTimeout(() => {
-            this.isLoading = false;
-          }, 400);
+            this.isLoading = false
+          }, 400)
         },
         methods: {
           generateAnswers() {
-            let answers = [];
+            let answers = []
             for (let i = 0; i < 5; i++) {
               answers.push({
                 value: 16 + i * 2,
-              });
+              })
             }
-            return answers;
+            return answers
           },
           vote(index) {
             const vote = {
               value: this.poll.answers[index].value,
               wallet: this.cryptos.wallet,
-            };
-            this.poll.votes.push(vote);
+            }
+            this.poll.votes.push(vote)
           },
         },
         computed: {},
-      });
+      })
     </script>
   </body>
 </html>
