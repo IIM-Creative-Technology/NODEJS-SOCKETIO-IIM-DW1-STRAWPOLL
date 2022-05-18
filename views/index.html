@@ -226,7 +226,7 @@
               v-for="(answer, index) in poll.answers"
               :key="index"
               class="flex flex-row justify-between p-2 gap-2 border border-gray-900 drop-shadow cursor-pointer rounded truncate"
-              @click="vote(index)"
+              @click="addVote(index)"
             >
               <div class="flex flex-1">{{ answer.value }}</div>
               <span v-if="poll.votes.length">
@@ -264,13 +264,13 @@
           },
         },
         mounted() {
-          this.poll.answers = this.generateAnswers()
+          this.poll.answers = this.generatePollAnswers()
           setTimeout(() => {
             this.isLoading = false
           }, 400)
         },
         methods: {
-          generateAnswers() {
+          generatePollAnswers() {
             let answers = []
             for (let i = 0; i < 5; i++) {
               answers.push({
@@ -279,7 +279,7 @@
             }
             return answers
           },
-          vote(index) {
+          addVote(index) {
             const vote = {
               value: this.poll.answers[index].value,
               wallet: this.cryptos.wallet,
