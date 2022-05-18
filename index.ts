@@ -2,12 +2,16 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { Server, createServer } from "http";
-import { Socket } from "socket.io";
+import SocketServer from "./socket"
 
 dotenv.config();
 
 const app: Express = express();
+const httpServer: Server = createServer(app);
 const port = process.env.PORT || 8000;
+
+const socketServer = new SocketServer(httpServer)
+socketServer.handleEvents();
 
 app.get("/", (req: Request, res: Response) => {
   const options = { root: path.join(__dirname) };
@@ -15,6 +19,6 @@ app.get("/", (req: Request, res: Response) => {
   res.sendFile(filepath, options);
 });
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+httpServer.listen(port, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
