@@ -244,6 +244,15 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0/dist/vue.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
+      import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+
+      const socket = io("http://localhost:8000");
+
+      // client-side
+      socket.on("invite", (poll) => {
+        console.log(JSON.parse(JSON.stringify(poll)));
+      });
+
       let app = new Vue({
         el: "#app",
         data: {
@@ -265,6 +274,7 @@
         },
         mounted() {
           this.poll.answers = this.generatePollAnswers()
+
           setTimeout(() => {
             this.isLoading = false
           }, 400)

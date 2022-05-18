@@ -44,7 +44,12 @@ export default class SocketServer {
   }
 
   addVote(vote: Vote) {
+    if(this.poll.votes.some(v => v.user.id == vote.user.id)) {
+      console.log(`⚡️[server]: ${vote.user.firstname} has already voted`);
+      return;
+    }
     this.poll.votes.push(vote);
+    console.log(`⚡️[server]: ${vote.user.firstname} voted ${vote.option.value} on poll ${this.poll.title}`);  
   }
 
   getCurrentPoll() {
@@ -65,13 +70,13 @@ export default class SocketServer {
       this.poll = this.getCurrentPoll();
 
       socket.emit(SocketEvents.INVITE, {
-        poll: JSON.stringify(this.poll),
+        poll: this.poll,
       });
 
       socket.on(SocketEvents.DISCONNECT, () => {
         const user = this.getUser(socket.id);
         if(user) {
-          this.users = this.users.splice(this.users.indexOf(user), 1);
+          this.users.splice(this.users.indexOf(user), 1);
           socket.leave(user.poll);
           console.log(`⚡️[server]: ${user.firstname} has disconnected`);
           console.log(`⚡️[server]: ${this.users.length} user${this.users.length > 1 ? 's' : ''} left`);
@@ -104,10 +109,10 @@ export default class SocketServer {
         const user = this.getUser(socket.id);
         const poll = this.getCurrentPoll();
         const option = this.getOption(id);
-        const vote = new Vote(poll, option, user);
+        const vote = new Vote(option, user);
 
-        console.log(`⚡️[server]: ${user.firstname} voted ${option.value} on poll ${poll.title}`);
-        this.io.to(vote.poll.id).emit(SocketEvents.VOTED, vote);
+        this.addVote(vote);
+        this.io.to(poll.id).emit(SocketEvents.VOTED, poll.votes);
       });
     });
   }
@@ -161,12 +166,10 @@ export class Poll {
 }
 
 export class Vote {
-  poll: Poll;
   option: Option;
   user: User;
 
-  constructor(poll: Poll, option: Option, user: User) {
-    this.poll = poll;
+  constructor(option: Option, user: User) {
     this.option = option;
     this.user = user;
   }
