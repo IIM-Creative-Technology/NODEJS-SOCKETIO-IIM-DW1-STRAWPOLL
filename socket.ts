@@ -43,12 +43,14 @@ export default class SocketServer {
     return Math.random().toString(36).substr(2, 9)
   }
 
-  addVote(vote: Vote) {
-    if (this.poll.votes.some((v) => v.user.id == vote.user.id)) {
+  addVote(vote: Vote, heddibuAmount: number) {
+    if (this.poll.votes.some((v) => v.user.wallet == vote.user.wallet)) {
       console.log(`⚡️[server]: ${vote.user.firstname} has already voted`)
       return
     }
     this.poll.votes.push(vote)
+    this.poll.options[this.poll.options.findIndex((o) => o.id === vote.option.id)].voteCount += heddibuAmount
+
     console.log(`⚡️[server]: ${vote.user.firstname} voted ${vote.option.value} on poll ${this.poll.title}`)
   }
 
@@ -74,7 +76,7 @@ export default class SocketServer {
           params: [
             "CBerpHYykgTgM17GCjA5CbQY6wL7eiu884ToRJhj53VF",
             {
-              mint: '4YgT6u6dCmdwYhvWK5bUCvU57uFJjxjLpffE9UVy48xK',
+              mint: "4YgT6u6dCmdwYhvWK5bUCvU57uFJjxjLpffE9UVy48xK",
             },
             {
               encoding: "jsonParsed",
@@ -107,14 +109,15 @@ export default class SocketServer {
         }
       })
 
-      socket.on(SocketEvents.JOIN, (user: User) => {
+      socket.on(SocketEvents.JOIN, async (user: User) => {
         user.id = socket.id
         if (!this.users.some((u) => u.wallet === user.wallet)) {
           this.users.push(user)
           socket.join(user.poll)
           console.log(`⚡️[server]: ${user.firstname} joined poll ${user.poll}`)
           console.log(`⚡️[server]: ${this.users.length} user${this.users.length > 1 ? "s" : ""} connected`)
-          socket.emit(SocketEvents.JOINRESPONSE, { user: user, balance: this.getHeddibu() })
+          const heddibuAmount = await this.getHeddibu()
+          socket.emit(SocketEvents.JOINRESPONSE, { user: user, balance: heddibuAmount })
         }
       })
 
@@ -128,14 +131,14 @@ export default class SocketServer {
         }
       })
 
-      socket.on(SocketEvents.VOTE, (id: any) => {
-        id = parseInt(id.toString())
+      socket.on(SocketEvents.VOTE, (optionId: any, heddibuAmount: number) => {
+        optionId = parseInt(optionId.toString())
         const user = this.getUser(socket.id)
         const poll = this.getCurrentPoll()
-        const option = this.getOption(id)
+        const option = this.getOption(optionId)
         const vote = new Vote(option, user)
 
-        this.addVote(vote)
+        this.addVote(vote, heddibuAmount)
         this.io.to(poll.id).emit(SocketEvents.VOTED, poll.votes)
       })
     })
@@ -160,11 +163,13 @@ export class User {
 
 export class Option {
   id: number
-  value: string
+  value: number
+  voteCount: number
 
-  constructor(id: number, value: string) {
+  constructor(id: number, value: number) {
     this.id = id
     this.value = value
+    this.voteCount = 0
   }
 }
 export class Poll {
@@ -179,13 +184,7 @@ export class Poll {
     this.id = id
     this.title = title
     this.votes = []
-    this.options = [
-      new Option(0, "16°C"),
-      new Option(1, "18°C"),
-      new Option(2, "20°C"),
-      new Option(3, "22°C"),
-      new Option(4, "24°C"),
-    ]
+    this.options = [new Option(0, 16), new Option(1, 18), new Option(2, 20), new Option(3, 22), new Option(4, 24)]
     this.start = moment().tz("Europe/Paris").minutes(0).seconds(0).format("HH:mm:ss")
     this.end = moment().tz("Europe/Paris").minutes(0).seconds(0).add(1, "hours").format("HH:mm:ss")
   }

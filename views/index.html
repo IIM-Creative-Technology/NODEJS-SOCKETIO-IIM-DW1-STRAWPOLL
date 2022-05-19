@@ -71,7 +71,7 @@
                     </div>
                   </div>
                   <div class="hidden md:block md:ml-10 md:space-x-10">
-                    <a href="#" class="font-medium text-gray-500 hover:text-gray-900">Gaming</a>
+                    <a href="https://p.miaou.land/" class="font-medium text-gray-500 hover:text-gray-900">Gaming</a>
 
                     <a href="#" class="font-medium text-gray-500 hover:text-gray-900">Mining</a>
                   </div>
@@ -117,7 +117,7 @@
                   </div>
                   <div class="px-2 pt-2 pb-3 space-y-1">
                     <a
-                      href="#"
+                      href="https://p.miaou.land/"
                       class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                     >
                       Gaming
@@ -227,21 +227,18 @@
                 </div>
               </div>
               <div v-else>
-                <div>{{ poll?.name }}</div>
-
+                <div class="flex w-2/5 justify-center font-extrabold text-lg">{{ poll?.title }}</div>
+                {{ poll.options}}
                 <div class="flex flex-col gap-2 p-4 m-2 border border-indigo-100 w-2/5">
                   <div
-                    v-for="(answer, index) in poll.options"
+                    v-for="(option, index) in poll.options"
                     :key="index"
                     class="flex flex-row justify-between p-2 gap-2 border border-gray-800 text-indigo-500 drop-shadow cursor-pointer rounded truncate transition hover:bg-indigo-50 hover:text-indigo-600"
                     @click="addVote(index)"
                   >
-                    <div class="flex flex-1">{{ answer.value }}</div>
-                    <span v-if="poll.votes.length">
-                      {{ Math.round(poll.votes.filter(e => e.value === answer.value).length / poll.votes.length * 100)
-                      }}%
-                    </span>
-                    <span> ({{poll.votes.filter(e => e.value === answer.value).length}}) </span>
+                    <div class="flex flex-1">{{ option.value }}°C</div>
+                    <span v-if="option.voteCount"> {{ option.voteCount / poll.totalVotes * 100 }}% </span>
+                    <span> ({{ option.voteCount }} H) </span>
                   </div>
                 </div>
               </div>
@@ -280,20 +277,36 @@
         mounted() {
           this.isLoading = true
 
-          socket.on("invite", (data) => (this.poll = data.poll))
+          socket.on("invite", (data) => {
+            this.poll = data.poll
+            this.poll.totalVotes = 0
+            this.poll.options.forEach((option) => {
+              this.poll.totalVotes += option.voteCount
+            })
+          })
 
           setTimeout(() => (this.isLoading = false), 400)
         },
         created() {
-          socket.on("joinResponse", (data) => (app.user = this.user, app.balance = this.balance))
+          socket.on("joinResponse", (data) => {
+            this.user = data.user
+            this.cryptos.heddibu.amount = parseInt(data.balance)
+          })
+          socket.on("voted", (votes) => (this.poll.votes = votes))
         },
         methods: {
           addVote(index) {
-            const vote = {
-              value: this.poll.options[index].value,
-              wallet: this.cryptos.wallet,
-            }
-            this.poll.votes.push(vote)
+            const option = this.poll.options.filter((e) => e.value === this.poll.options[index].value)[0]
+            socket.emit("vote", option.id, this.cryptos.heddibu.amount)
+          },
+          computePollValue(index) {
+            let amount = 0
+            this.poll.votes.forEach((vote) => {
+              if (vote.option.id === this.poll.options[index].id) {
+                amount += vote.user.value
+              }
+            })
+            return amount
           },
           leavePoll() {
             socket.emit("leave")
@@ -308,12 +321,9 @@
               wallet: this.cryptos.wallet,
               poll: this.poll.id,
             }
-            if (user.poll && user.wallet) {
-              socket.emit("join", user)
-            }
+            if (user.poll && user.wallet) socket.emit("join", user)
           },
         },
-        computed: {},
       })
     </script>
   </body>
