@@ -51,7 +51,7 @@ export default class SocketServer {
     this.poll.votes.push(vote)
     this.poll.options[this.poll.options.findIndex((o) => o.id === vote.option.id)].voteCount += heddibuAmount
 
-    console.log(`⚡️[server]: ${vote.user.firstname} voted ${vote.option.value} on poll ${this.poll.title}`)
+    console.log(`⚡️[server]: ${vote.user.firstname} voted ${vote.option.value}°C on poll ${this.poll.title}`)
   }
 
   getCurrentPoll() {
@@ -63,7 +63,7 @@ export default class SocketServer {
     return this.poll.options.filter((o) => o.id === id)[0]
   }
 
-  async getHeddibu() {
+  async getHeddibu(wallet: string) {
     const response = await axios({
       url: `https://api.devnet.solana.com`,
       method: "post",
@@ -74,7 +74,7 @@ export default class SocketServer {
           id: 1,
           method: "getTokenAccountsByOwner",
           params: [
-            "CBerpHYykgTgM17GCjA5CbQY6wL7eiu884ToRJhj53VF",
+            wallet,
             {
               mint: "4YgT6u6dCmdwYhvWK5bUCvU57uFJjxjLpffE9UVy48xK",
             },
@@ -116,7 +116,7 @@ export default class SocketServer {
           socket.join(user.poll)
           console.log(`⚡️[server]: ${user.firstname} joined poll ${user.poll}`)
           console.log(`⚡️[server]: ${this.users.length} user${this.users.length > 1 ? "s" : ""} connected`)
-          const heddibuAmount = await this.getHeddibu()
+          const heddibuAmount = await this.getHeddibu(user.wallet)
           socket.emit(SocketEvents.JOINRESPONSE, { user: user, balance: heddibuAmount })
         }
       })

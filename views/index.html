@@ -47,6 +47,7 @@
                         class="h-8 w-auto sm:h-10"
                         src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
                         alt=""
+                        @click="leavePoll()"
                       />
                     </a>
                     <div class="-mr-2 flex items-center md:hidden">
@@ -233,10 +234,11 @@
                     v-for="(option, index) in poll.options"
                     :key="index"
                     class="flex flex-row justify-between p-2 gap-2 border border-gray-800 text-indigo-500 drop-shadow cursor-pointer rounded truncate transition hover:bg-indigo-50 hover:text-indigo-600"
+                    :class="[this.poll?.votes.findIndex(ele => ele.user.wallet === cryptos.wallet) >= 0 ? 'bg-indigo-50' : 'kek']"
                     @click="addVote(index)"
                   >
                     <div class="flex flex-1">{{ option.value }}°C</div>
-                    <span v-if="option.voteCount"> {{ option.voteCount / poll.totalVotes * 100 }}% </span>
+                    <span> {{ option.voteCount / poll.totalVotes * 100 }}% </span>
                     <span> ({{ option.voteCount }} H) </span>
                   </div>
                 </div>
@@ -278,34 +280,32 @@
 
           socket.on("invite", (data) => {
             this.poll = data.poll
-            this.poll.totalVotes = 0
-            this.poll.options.forEach((option) => {
-              this.poll.totalVotes += option.voteCount
-            })
+            this.computePollTotalVotes()
           })
 
           setTimeout(() => (this.isLoading = false), 400)
         },
         created() {
+          socket.on("voted", (votes) => {
+            this.poll.votes = votes
+            this.computePollTotalVotes()
+            console.log("yo", this.cryptos.heddibu.amount)
+          })
           socket.on("joinResponse", (data) => {
             this.user = data.user
             this.cryptos.heddibu.amount = parseInt(data.balance)
           })
-          socket.on("voted", (votes) => (this.poll.votes = votes))
         },
         methods: {
           addVote(index) {
             const option = this.poll.options.filter((e) => e.value === this.poll.options[index].value)[0]
             socket.emit("vote", option.id, this.cryptos.heddibu.amount)
           },
-          computePollValue(index) {
-            let amount = 0
-            this.poll.votes.forEach((vote) => {
-              if (vote.option.id === this.poll.options[index].id) {
-                amount += vote.user.value
-              }
+          computePollTotalVotes() {
+            this.poll.totalVotes = 0
+            this.poll.options.forEach((option) => {
+              this.poll.totalVotes += parseInt(option.voteCount)
             })
-            return amount
           },
           leavePoll() {
             socket.emit("leave")
@@ -320,9 +320,15 @@
               wallet: this.cryptos.wallet,
               poll: this.poll.id,
             }
+            console.log("user", user)
             if (user.poll && user.wallet) socket.emit("join", user)
           },
         },
+        // watch: {
+        //   "cryptos.wallet"(newVal) {
+        //     if (newVal !== "") this.joinPoll()
+        //   },
+        // },
       })
     </script>
   </body>
