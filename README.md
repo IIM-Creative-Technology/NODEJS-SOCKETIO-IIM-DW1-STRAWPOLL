@@ -11,3 +11,9 @@ Then install packages :
 ```sh
 npm install
 ```
+
+Then start the server :
+
+```sh
+npm start
+```
