@@ -6,6 +6,7 @@ enum SocketEvents {
   CONNECTION = "connection",
   DISCONNECT = "disconnect",
   JOIN = "join",
+  JOINRESPONSE = "joinResponse",
   LEAVE = "leave",
   INVITE = "invite",
   VOTE = "vote",
@@ -80,14 +81,14 @@ export default class SocketServer {
         }
       })
 
-      socket.on(SocketEvents.JOIN, (poll: string, user: User) => {
+      socket.on(SocketEvents.JOIN, (user: User) => {
         user.id = socket.id
-        user.poll = poll
         if (!this.users.some((u) => u.wallet === user.wallet)) {
           this.users.push(user)
-          socket.join(poll)
-          console.log(`⚡️[server]: ${user.firstname} joined poll ${poll}`)
+          socket.join(user.poll)
+          console.log(`⚡️[server]: ${user.firstname} joined poll ${user.poll}`)
           console.log(`⚡️[server]: ${this.users.length} user${this.users.length > 1 ? "s" : ""} connected`)
+          socket.emit(SocketEvents.JOINRESPONSE, { user: user })
         }
       })
 
