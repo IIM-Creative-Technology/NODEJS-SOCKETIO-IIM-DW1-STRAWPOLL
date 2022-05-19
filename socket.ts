@@ -111,7 +111,7 @@ export default class SocketServer {
 
       socket.on(SocketEvents.JOIN, async (user: User) => {
         user.id = socket.id
-        if (!this.users.some((u) => u.wallet === user.wallet)) {
+        if (!this.users.some((u) => u?.wallet === user?.wallet)) {
           this.users.push(user)
           socket.join(user.poll)
           console.log(`⚡️[server]: ${user.firstname} joined poll ${user.poll}`)
