@@ -1,6 +1,7 @@
 import { Server as httpServer } from "http"
 import { Server, Socket } from "socket.io"
 import moment from "moment-timezone"
+import axios from "axios"
 
 enum SocketEvents {
   CONNECTION = "connection",
@@ -60,6 +61,31 @@ export default class SocketServer {
     return this.poll.options.filter((o) => o.id === id)[0]
   }
 
+  async getHeddibu() {
+    const response = await axios({
+      url: `https://api.devnet.solana.com`,
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      data: [
+        {
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getTokenAccountsByOwner",
+          params: [
+            "CBerpHYykgTgM17GCjA5CbQY6wL7eiu884ToRJhj53VF",
+            {
+              mint: '4YgT6u6dCmdwYhvWK5bUCvU57uFJjxjLpffE9UVy48xK',
+            },
+            {
+              encoding: "jsonParsed",
+            },
+          ],
+        },
+      ],
+    })
+    return response.data[0].result.value[0].account.data.parsed.info.tokenAmount.uiAmountString
+  }
+
   handleEvents() {
     console.log("⚡️[server]: Socket server ready to handle events")
     this.io.on(SocketEvents.CONNECTION, (socket: Socket) => {
@@ -88,7 +114,7 @@ export default class SocketServer {
           socket.join(user.poll)
           console.log(`⚡️[server]: ${user.firstname} joined poll ${user.poll}`)
           console.log(`⚡️[server]: ${this.users.length} user${this.users.length > 1 ? "s" : ""} connected`)
-          socket.emit(SocketEvents.JOINRESPONSE, { user: user })
+          socket.emit(SocketEvents.JOINRESPONSE, { user: user, balance: this.getHeddibu() })
         }
       })
 

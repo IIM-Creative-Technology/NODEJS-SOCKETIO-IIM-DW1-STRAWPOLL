@@ -275,6 +275,7 @@
           },
           poll: null,
           user: null,
+          balance: null,
         },
         mounted() {
           this.isLoading = true
@@ -284,7 +285,7 @@
           setTimeout(() => (this.isLoading = false), 400)
         },
         created() {
-          socket.on("joinResponse", (data) => (app.user = data.user))
+          socket.on("joinResponse", (data) => (app.user = this.user, app.balance = this.balance))
         },
         methods: {
           addVote(index) {
